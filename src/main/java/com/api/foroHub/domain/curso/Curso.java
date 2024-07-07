@@ -18,12 +18,20 @@ import java.util.List;
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_curso")
     private Long id;
+    @Column(name = "nombre_curso")
     private String nombreCurso;
+    @Column(name = "descripcion")
     private String descripcion;
-
     @OneToMany(mappedBy = "curso")
     private List<Topico> topicos;
-
+    @Column(name = "activo")
     private Boolean activo;
+
+    public Curso(DatosRegistroCurso datosRegistroCurso) {
+        this.nombreCurso = datosRegistroCurso.nombreCurso();
+        this.descripcion = datosRegistroCurso.descripcion();
+        this.activo = true;
+    }
 }

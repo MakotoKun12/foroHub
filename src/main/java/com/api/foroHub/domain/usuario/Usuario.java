@@ -18,20 +18,23 @@ import java.util.List;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long id;
+    @Column(name = "nombre")
     private String nombre;
+    @Column(name = "email")
     private String email;
+    @Column(name = "password")
     private String password;
-
-
     @OneToMany(mappedBy = "autor")
     private List<Topico> topicos;
-
+    @Column(name = "activo")
     private Boolean activo;
 
     public Usuario(DatosRegistroUsuario datosRegistroUsuario) {
         this.nombre = datosRegistroUsuario.nombre();
         this.email = datosRegistroUsuario.email();
         this.password = datosRegistroUsuario.password();
+        this.activo = true;
     }
 }
