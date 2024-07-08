@@ -15,7 +15,7 @@ CREATE TABLE cursos (
 
 CREATE TABLE topicos (
     id_topico INT PRIMARY KEY AUTO_INCREMENT,
-    título VARCHAR(200) NOT NULL,
+    titulo VARCHAR(200) NOT NULL,
     mensaje TEXT NOT NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) NOT NULL,

@@ -36,4 +36,15 @@ public class Topico {
     private Curso curso;
 
     private Boolean activo;
+
+
+    public Topico(Usuario autor, Curso curso, String titulo, String mensaje, LocalDateTime fechaCreacion, Status status) {
+        this.autor = autor;
+        this.curso = curso;
+        this.titulo = titulo;
+        this.mensaje = mensaje;
+        this.fechaCreacion = fechaCreacion;
+        this.status = status;
+        this.activo = true;
+    }
 }
