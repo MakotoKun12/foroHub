@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,20 +24,18 @@ public class TratadorErrores {
 
     private static final Logger logger = LoggerFactory.getLogger(TratadorErrores.class);
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Email o password invalidos", null);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> tratarError404(EntityNotFoundException ex) {
-        String errorId = logError(ex);
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
-        body.put("message", ex.getMessage());
-        body.put("errorId", errorId);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), logError(ex));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> tratarError400(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         var errores = ex.getFieldErrors().stream().map(DatosErrorValidacion::new).toList();
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
@@ -47,25 +46,17 @@ public class TratadorErrores {
 
     @ExceptionHandler(ValidacionIntegridad.class)
     public ResponseEntity<Map<String, Object>> handleValidacionIntegridad(ValidacionIntegridad ex) {
-        String errorId = logError(ex);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), errorId);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), logError(ex));
     }
 
     @ExceptionHandler(DuplicadoException.class)
-    public ResponseEntity<?> tratarErrorDuplicado(DuplicadoException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new DatosError(e.getMessage()));
+    public ResponseEntity<Map<String, Object>> handleDuplicadoException(DuplicadoException ex) {
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
-        String errorId = logError(ex);
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        body.put("message", "An unexpected error occurred");
-        body.put("errorId", errorId);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", logError(ex));
     }
 
     private String logError(Exception ex) {
@@ -80,14 +71,10 @@ public class TratadorErrores {
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         body.put("message", message);
-        body.put("errorId", errorId);
-        return new ResponseEntity<>(body, status);
-    }
-
-    private record DatosError(String mensaje) {
-        public DatosError(String mensaje) {
-            this.mensaje = mensaje;
+        if (errorId != null) {
+            body.put("errorId", errorId);
         }
+        return ResponseEntity.status(status).body(body);
     }
 
     private record DatosErrorValidacion(String campo, String error) {
