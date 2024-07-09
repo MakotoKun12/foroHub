@@ -2,6 +2,7 @@ package com.api.foroHub.infra.errores;
 
 import com.api.foroHub.infra.excepciones.DuplicadoException;
 import com.api.foroHub.infra.excepciones.ValidacionIntegridad;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,11 @@ public class TratadorErrores {
     @ExceptionHandler(DuplicadoException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicadoException(DuplicadoException ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(ValidationException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), logError(ex));
     }
 
     @ExceptionHandler(Exception.class)

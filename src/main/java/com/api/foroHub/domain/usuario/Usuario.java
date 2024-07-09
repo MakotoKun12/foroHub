@@ -1,5 +1,6 @@
 package com.api.foroHub.domain.usuario;
 
+import com.api.foroHub.domain.respuesta.Respuesta;
 import com.api.foroHub.domain.topico.Topico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,8 @@ public class Usuario implements UserDetails {
     private String password;
     @OneToMany(mappedBy = "autor")
     private List<Topico> topicos;
+    @OneToMany(mappedBy = "autor")
+    private List<Respuesta> respuestas;
     @Column(name = "activo")
     private Boolean activo;
 

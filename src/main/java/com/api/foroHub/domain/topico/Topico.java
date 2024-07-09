@@ -1,11 +1,13 @@
 package com.api.foroHub.domain.topico;
 
 import com.api.foroHub.domain.curso.Curso;
+import com.api.foroHub.domain.respuesta.Respuesta;
 import com.api.foroHub.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "topicos")
 @Entity(name = "Topico")
@@ -33,6 +35,9 @@ public class Topico {
     @ManyToOne
     @JoinColumn(name = "id_curso")
     private Curso curso;
+
+    @OneToMany(mappedBy = "topico")
+    private List<Respuesta> respuestas;
 
     private Boolean activo;
 
