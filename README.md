@@ -16,7 +16,7 @@ Y a partir de ello ir subiendo respuestas al respecto.</p>
 <h2 align="left">Instalacion</h2>
 1. Clona el repositorio
 
-``` git clone git@github.com:MakotoKun12/literalura.git ```
+``` git clone https://github.com/MakotoKun12/foroHub.git ```
     
 2. Navega al directorio del proyecto
 ``` cd foroHub ```
